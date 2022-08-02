@@ -72,13 +72,11 @@ except:
 shadowsocksURLRegexStr = r'^([\w\-]+):([\w+=\/]+)@([\w\-\.]+):([\d]+)$'
 shadowsocksURLRegex = re.compile(shadowsocksURLRegexStr)
 
-match = shadowsocksURLRegex.match(shadowsocksURL)
-
-if match:
-    cipher = match.group(1)
-    password = match.group(2)
-    server = match.group(3)
-    port = match.group(4)
+if match := shadowsocksURLRegex.match(shadowsocksURL):
+    cipher = match[1]
+    password = match[2]
+    server = match[3]
+    port = match[4]
 
     if args.cipher:
         print(cipher)

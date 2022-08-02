@@ -202,9 +202,7 @@ class DODroplet(object):
             return None
         response = self.rest.get('droplets/{0}'.format(droplet_id))
         json_data = response.json
-        if response.status_code == 200:
-            return json_data
-        return None
+        return json_data if response.status_code == 200 else None
 
     def get_by_name(self, droplet_name):
         if not droplet_name:
@@ -212,8 +210,8 @@ class DODroplet(object):
         page = 1
         while page is not None:
             response = self.rest.get('droplets?page={0}'.format(page))
-            json_data = response.json
             if response.status_code == 200:
+                json_data = response.json
                 for droplet in json_data['droplets']:
                     if droplet['name'] == droplet_name:
                         return {'droplet': droplet}
@@ -228,7 +226,7 @@ class DODroplet(object):
          Expose IP addresses as their own property allowing users extend to additional tasks
         """
         _data = data
-        for k, v in data.items():
+        for k, v in _data.items():
             setattr(self, k, v)
         networks = _data['droplet']['networks']
         for network in networks.get('v4', []):
@@ -272,8 +270,7 @@ class DODroplet(object):
         self.module.exit_json(changed=True, data=droplet_data)
 
     def delete(self):
-        json_data = self.get_droplet()
-        if json_data:
+        if json_data := self.get_droplet():
             if self.module.check_mode:
                 self.module.exit_json(changed=True)
             response = self.rest.delete('droplets/{0}'.format(json_data['droplet']['id']))
